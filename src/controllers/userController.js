@@ -1,10 +1,9 @@
-// src/controllers/userController.js
-
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-exports.register = async (req, res) => {
+// User registration controller
+exports.registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
@@ -17,7 +16,8 @@ exports.register = async (req, res) => {
     }
 };
 
-exports.login = async (req, res) => {
+// User login controller
+exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -38,6 +38,7 @@ exports.login = async (req, res) => {
     }
 };
 
+// Get user profile controller
 exports.getUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');

@@ -1,29 +1,40 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const eventRoutes = require('./routes/eventRoutes');
-const ticketRoutes = require('./routes/ticketRoutes');
-const userRoutes = require('./routes/userRoutes');
+require('dotenv').config();
 
-dotenv.config();
+const mongoose = require('mongoose');
+const express = require('express');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
-// Middleware
-app.use(express.json());
+// Debug environment variables
+console.log('DB_URI:', process.env.DB_URI);
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected'))
+const dbUri = process.env.DB_URI;
+if (!dbUri) {
+    console.error('DB_URI is not defined in the environment variables.');
+    process.exit(1);
+}
+
+// Connect to MongoDB
+mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-// API routes
-app.use('/api/events', eventRoutes);
-app.use('/api/tickets', ticketRoutes);
-app.use('/api/users', userRoutes);
+// Middleware to parse JSON requests
+app.use(express.json());
+
+// Import and register routes
+const eventRoutes = require('./routes/eventRoutes'); // Import event routes
+const bookingRoutes = require('./routes/bookingRoutes'); // Import booking routes
+app.use('/api/events', eventRoutes); // Register event routes
+app.use('/api/bookings', bookingRoutes); // Register booking routes
+
+// Default route for the root URL
+app.get('/', (req, res) => {
+    res.send('Welcome to the Event Ticketing System!');
+});
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
