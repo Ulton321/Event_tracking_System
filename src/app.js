@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 
 const mongoose = require('mongoose');
@@ -26,8 +27,10 @@ app.use(express.json());
 // Import and register routes
 const eventRoutes = require('./routes/eventRoutes'); // Import event routes
 const bookingRoutes = require('./routes/bookingRoutes'); // Import booking routes
+const userRoutes = require('./routes/userRoutes'); // Import user routes
 app.use('/api/events', eventRoutes); // Register event routes
 app.use('/api/bookings', bookingRoutes); // Register booking routes
+app.use('/api/users', userRoutes); // Register user routes
 
 // Default route for the root URL
 app.get('/', (req, res) => {
