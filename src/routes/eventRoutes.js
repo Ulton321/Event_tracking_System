@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Event = require('../models/Event');
+const Event = require('../models/Event'); // Assuming you have an Event model
+const { authenticate } = require('../middleware/authenticate'); // Middleware to verify JWT
+
+
 
 // GET /api/events - Return all events with filtering, sorting, and pagination
 router.get('/', async (req, res) => {
@@ -72,6 +75,29 @@ router.post('/events', (req, res) => {
     res.status(201).json({ message: 'Event created successfully', event: newEvent });
 });
 
+router.post('/', authenticate, async (req, res) => {
+    try {
+        // Check if the user is an admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admins only.' });
+        }
 
+        const { name, date, location } = req.body;
+
+        // Validate input
+        if (!name || !date || !location) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        // Create and save the event
+        const event = new Event({ name, date, location });
+        await event.save();
+
+        res.status(201).json({ message: 'Event created successfully', event });
+    } catch (error) {
+        console.error('Error creating event:', error);
+        res.status(500).json({ message: 'Error creating event', error });
+    }
+});
 
 module.exports = router;
