@@ -59,4 +59,19 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+router.post('/events', (req, res) => {
+    const { name, date, location } = req.body;
+
+    // Validate input
+    if (!name || !date || !location) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Simulate saving the event (replace with database logic)
+    const newEvent = { id: Date.now(), name, date, location };
+    res.status(201).json({ message: 'Event created successfully', event: newEvent });
+});
+
+
+
 module.exports = router;
