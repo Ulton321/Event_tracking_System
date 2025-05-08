@@ -25,13 +25,14 @@ mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
 app.use(express.json());
 
 // Import and register routes
+const authRoutes = require('./routes/authRoutes'); // Import auth routes	
 const eventRoutes = require('./routes/eventRoutes'); // Import event routes
 const bookingRoutes = require('./routes/bookingRoutes'); // Import booking routes
 const userRoutes = require('./routes/userRoutes'); // Import user routes
 app.use('/api/events', eventRoutes); // Register event routes
 app.use('/api/bookings', bookingRoutes); // Register booking routes
 app.use('/api/users', userRoutes); // Register user routes
-
+app.use('/api/auth', authRoutes); // Register auth routes	
 // Default route for the root URL
 app.get('/', (req, res) => {
     res.send('Welcome to the Event Ticketing System!');
