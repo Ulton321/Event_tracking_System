@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // POST /api/auth/register - Register a new user
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password} = req.body;
 
         // Validate input
         if (!name || !email || !password) {
@@ -23,7 +24,7 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Save new user
-        const user = new User({ name, email, password: hashedPassword });
+        const user = new User({ name, email, password});
         await user.save();
 
         res.status(201).json({ message: 'User registered successfully' });
@@ -52,7 +53,7 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Save new user
-        const user = new User({ name, email, password: hashedPassword });
+        const user = new User({ name, email, password});
         await user.save();
 
         res.status(201).json({ message: 'User registered successfully' });
