@@ -26,4 +26,44 @@ router.get('/:id', authenticate, async (req, res) => {
     }
 });
 
+router.post('/', authenticate, async (req, res) => {
+    try {
+        const { eventId, seats } = req.body;
+
+        // Validate input
+        if (!eventId || !seats) {
+            return res.status(400).json({ message: 'Event ID and seats are required' });
+        }
+
+        // Find the event
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        // Check seat availability
+        if (event.seatCapacity - event.bookedSeats < seats) {
+            return res.status(400).json({ message: 'Not enough seats available' });
+        }
+
+        // Update booked seats
+        event.bookedSeats += seats;
+        await event.save();
+
+        // Create the booking
+        const booking = new Booking({
+            userId: req.user.id, // Assuming `authenticate` middleware adds `req.user`
+            eventId,
+            seats,
+        });
+        await booking.save();
+
+        res.status(201).json({ message: 'Booking successful', booking });
+    } catch (error) {
+        console.error('Error creating booking:', error);
+        res.status(500).json({ message: 'Error creating booking', error });
+    }
+});
+
+
 module.exports = router;

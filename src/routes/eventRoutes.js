@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Event = require('../models/Event'); // Assuming you have an Event model
+const Event = require('../models/Event'); // Import the Event model
 const { authenticate } = require('../middleware/authenticate'); // Middleware to verify JWT
-
-
 
 // GET /api/events - Return all events with filtering, sorting, and pagination
 router.get('/', async (req, res) => {
@@ -62,35 +60,25 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/events', (req, res) => {
-    const { name, date, location } = req.body;
-
-    // Validate input
-    if (!name || !date || !location) {
-        return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    // Simulate saving the event (replace with database logic)
-    const newEvent = { id: Date.now(), name, date, location };
-    res.status(201).json({ message: 'Event created successfully', event: newEvent });
-});
-
+// POST /api/events - Create a new event (admin only)
 router.post('/', authenticate, async (req, res) => {
     try {
+        console.log('Request body:', req.body); // Debugging log
+
         // Check if the user is an admin
         if (req.user.role !== 'admin') {
             return res.status(403).json({ message: 'Access denied. Admins only.' });
         }
 
-        const { name, date, location } = req.body;
+        const { title, description, category, venue, date, time, seatCapacity, price, bookedSeats } = req.body;
 
         // Validate input
-        if (!name || !date || !location) {
+        if (!title || !description || !category || !venue || !date || !time || !seatCapacity || !price || bookedSeats === undefined) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
         // Create and save the event
-        const event = new Event({ name, date, location });
+        const event = new Event(req.body);
         await event.save();
 
         res.status(201).json({ message: 'Event created successfully', event });
