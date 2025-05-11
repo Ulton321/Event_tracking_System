@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Ticket'); // Assuming Ticket is used for bookings
 const { authenticate } = require('../middleware/authenticate'); // Middleware for authentication
+const Event = require('../models/Event'); // Import the Event model
+const Ticket = require('../models/Ticket');
 
 // GET /api/bookings - Return all bookings for the logged-in user
 router.get('/', authenticate, async (req, res) => {
@@ -28,11 +30,11 @@ router.get('/:id', authenticate, async (req, res) => {
 
 router.post('/', authenticate, async (req, res) => {
     try {
-        const { eventId, seats } = req.body;
+        const { quantity, eventId } = req.body;
 
         // Validate input
-        if (!eventId || !seats) {
-            return res.status(400).json({ message: 'Event ID and seats are required' });
+        if (!quantity || !eventId) {
+            return res.status(400).json({ message: 'Quantity and event ID are required' });
         }
 
         // Find the event
@@ -41,29 +43,22 @@ router.post('/', authenticate, async (req, res) => {
             return res.status(404).json({ message: 'Event not found' });
         }
 
-        // Check seat availability
-        if (event.seatCapacity - event.bookedSeats < seats) {
-            return res.status(400).json({ message: 'Not enough seats available' });
-        }
-
-        // Update booked seats
-        event.bookedSeats += seats;
-        await event.save();
-
-        // Create the booking
-        const booking = new Booking({
-            userId: req.user.id, // Assuming `authenticate` middleware adds `req.user`
-            eventId,
-            seats,
+        // Create the ticket
+        const ticket = new Ticket({
+            quantity,
+            event: eventId,
+            user: req.user.id, // Assuming `authenticate` middleware adds `req.user`
         });
-        await booking.save();
 
-        res.status(201).json({ message: 'Booking successful', booking });
+        await ticket.save();
+
+        res.status(201).json({ message: 'Ticket created successfully', ticket });
     } catch (error) {
-        console.error('Error creating booking:', error);
-        res.status(500).json({ message: 'Error creating booking', error });
+        console.error('Error creating ticket:', error);
+        res.status(500).json({ message: 'Error creating ticket', error });
     }
 });
 
 
 module.exports = router;
+

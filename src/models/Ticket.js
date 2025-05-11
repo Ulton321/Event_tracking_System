@@ -1,31 +1,24 @@
 const mongoose = require('mongoose');
 
 const ticketSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+    quantity: {
+        type: Number,
+        required: [true, 'Path `quantity` is required.'],
     },
     event: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Event',
-        required: true
+        required: [true, 'Path `event` is required.'],
     },
-    quantity: {
-        type: Number,
-        required: true,
-        min: 1
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'Path `user` is required.'],
     },
-    bookingDate: {
+    createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
-    qrCode: {
-        type: String,
-        required: false
-    }
 });
 
-const Ticket = mongoose.model('Ticket', ticketSchema);
-
-module.exports = Ticket;
+module.exports = mongoose.model('Ticket', ticketSchema);
