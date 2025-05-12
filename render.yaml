@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: EventTrackingSystem
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DB_URI
+        value: mongodb+srv://sonsopheakotra12:g5JbkGqUbLvrPllk@cluster1.f3lytqg.mongodb.net/event_ticketing_system?retryWrites=true&w=majority
+      - key: JWT_SECRET
+        value: your_jwt_secret
+      - key: PORT
+        value: "5000"
+    plan: free
