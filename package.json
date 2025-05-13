@@ -20,5 +20,8 @@
     "nodemon": "^2.0.4"
   },
   "author": "Your Name",
-  "license": "ISC"
+  "license": "ISC",
+  "engines": {
+  "node": "18.x"
+}
 }
